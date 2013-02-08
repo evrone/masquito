@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'masquito'
+
+case ARGV.first
+when "start"
+  Masquito.start
+when "install"
+  require 'masquito/install'
+  Masquito.install
+  exit
+when "uninstall"
+  require 'masquito/install'
+  Masquito.uninstall
+when "version"
+  raise "Not implemented"
+else
+  puts "Usage: masquito #{%w{ install uninstall version }.join(' | ')}"
+end
