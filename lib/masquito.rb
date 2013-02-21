@@ -10,13 +10,6 @@ module Masquito
       "#{MASQUITO_ROOT}/bin/masquito"
     end
 
-    def start
-      while true
-        puts "started"
-        sleep 1
-      end
-    end
-
     def debug(message)
       STDERR.puts message
     end

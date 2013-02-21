@@ -3,16 +3,12 @@
 require 'rubygems'
 require 'masquito'
 
-case ARGV.first
+case command = ARGV.first
 when 'start'
-  Masquito.start
-when 'install'
+  Masquito::DNS.new('127.0.0.1', 53532)
+when /install|uninstall/
   require 'masquito/install'
-  Masquito.install
-  exit
-when 'uninstall'
-  require 'masquito/install'
-  Masquito.uninstall
+  Masquito.send(command)
 when 'version'
   require 'masquito/version'
   puts Masquito::VERSION
