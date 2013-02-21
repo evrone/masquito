@@ -4,17 +4,18 @@ require 'rubygems'
 require 'masquito'
 
 case ARGV.first
-when "start"
+when 'start'
   Masquito.start
-when "install"
+when 'install'
   require 'masquito/install'
   Masquito.install
   exit
-when "uninstall"
+when 'uninstall'
   require 'masquito/install'
   Masquito.uninstall
-when "version"
-  raise "Not implemented"
+when 'version'
+  require 'masquito/version'
+  puts Masquito::VERSION
 else
   puts "Usage: masquito #{%w{ install uninstall version }.join(' | ')}"
 end

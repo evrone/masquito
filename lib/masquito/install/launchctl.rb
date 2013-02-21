@@ -71,5 +71,4 @@ module Masquito
       end
     end
   end
-
 end
