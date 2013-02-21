@@ -10,7 +10,8 @@ module Masquito
     @@ttl = 10800 # 3 hours
 
     def initialize(addr, port, config_path = nil)
-      @settings = Settings.new(USER_CONFIG_DIR)
+      config_path ||= USER_CONFIG_DIR
+      @settings = Settings.new(config_path)
 
       # Bind port to receive requests
       socket = UDPSocket.new

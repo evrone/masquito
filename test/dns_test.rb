@@ -27,7 +27,7 @@ class TestMasquitoDNS < Test::Unit::TestCase
     FileUtils.rm_rf(TEMP_DIR)
   end
 
-  def test_something
+  def test_responses
     silence_warnings do
       Resolv::DNS.const_set(:Port, 53532)
     end
