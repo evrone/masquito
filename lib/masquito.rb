@@ -4,6 +4,7 @@ module Masquito
 
   autoload :DNS, 'masquito/dns'
   autoload :Settings, 'masquito/settings'
+  autoload :VERSION, 'masquito/version'
 
   class << self
     def bin_path
