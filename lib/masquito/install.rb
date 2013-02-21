@@ -1,31 +1,19 @@
 require 'fileutils'
-require "masquito/install/launchctl"
+require 'masquito/install/launchctl'
 
 module Masquito
   class << self
-    def mac?
-      !!(RUBY_PLATFORM =~ /darwin/)
-    end
-
     def install
-      check_if_mac!
-
       mkdir_user_config
       install_launchctl
     end
 
     def uninstall
-      check_if_mac!
-
       rmdir_user_config
       uninstall_launchctl
     end
 
     private
-
-    def check_if_mac!
-      abort("Currently only macs sorry.") unless mac?
-    end
 
     def install_launchctl
       Launchctl.install

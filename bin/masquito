@@ -3,6 +3,8 @@
 require 'rubygems'
 require 'masquito'
 
+abort 'Working only on MacOS for now' if RUBY_PLATFORM !~ /darwin/
+
 case command = ARGV.first
 when 'start'
   Masquito::DNS.new('127.0.0.1', 53532)
