@@ -10,13 +10,15 @@ links in `.masquito` directory.
 
 ## Installation
 
+First of all, uninstall Pow if you have it installed.
+
 Install it to your current or global gem set:
 
     gem install 'masquito'
 
 And then execute:
 
-    $ masquito start
+    $ masquito install
 
 ## Usage
 
