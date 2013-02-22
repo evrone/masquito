@@ -20,7 +20,12 @@ And then execute:
 
 ## Usage
 
-TODO: Write usage instructions here
+To set up a Rack app, just symlink it into ~/.masquito:
+
+```
+$ cd ~/.masquito
+$ ln -s /path/to/my/rails/app
+```
 
 ## Contributing
 
