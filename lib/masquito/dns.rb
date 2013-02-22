@@ -3,6 +3,8 @@ require 'resolv'
 
 module Masquito
   class DNS
+    PORT = 53532
+
     @@resource = {
       'A' => Resolv::DNS::Resource::IN::A.new('127.0.0.1'),
       'AAAA' => Resolv::DNS::Resource::IN::AAAA.new('::1')
@@ -10,6 +12,7 @@ module Masquito
     @@ttl = 10800 # 3 hours
 
     def initialize(addr, port, config_path = nil)
+      puts "Starting Masquito on #{addr}:#{port}"
       config_path ||= USER_CONFIG_DIR
       @settings = Settings.new(config_path)
 
