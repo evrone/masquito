@@ -6,6 +6,17 @@ module Masquito
     def install
       mkdir_user_config
       install_launchctl
+      print_instructions
+    end
+
+    def print_instructions
+      puts <<-eos
+Masquito daemon was successfully installed. Please, exec this command:
+
+sudo sh -c 'echo "# Masquito\\nnameserver 127.0.0.1\\nport #{Masquito::DNS::PORT}" > /etc/resolver/dev'
+
+to setup *.dev host.
+      eos
     end
 
     def uninstall
