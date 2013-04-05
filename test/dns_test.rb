@@ -17,7 +17,7 @@ class TestMasquitoDNS < Test::Unit::TestCase
     end
 
     @thread = Thread.new do
-      Masquito::DNS.new('127.0.0.1', '53532', TEMP_DIR)
+      Masquito::DNS.new('127.0.0.1', '51234', TEMP_DIR)
     end
   end
 
@@ -29,7 +29,7 @@ class TestMasquitoDNS < Test::Unit::TestCase
 
   def test_responses
     silence_warnings do
-      Resolv::DNS.const_set(:Port, 53532)
+      Resolv::DNS.const_set(:Port, 51234)
     end
 
     response = Resolv::IPv4.create('127.0.0.1')

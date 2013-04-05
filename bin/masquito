@@ -3,17 +3,25 @@
 require 'rubygems'
 require 'masquito'
 
-abort 'Working only on MacOS for now' if RUBY_PLATFORM !~ /darwin/
+abort 'Works only on Mac OS X' if RUBY_PLATFORM !~ /darwin/
 
-case command = ARGV.first
+command = ARGV[0]
+subcommand = ARGV[1]
+filename = File.basename(__FILE__)
+
+case command
 when 'start'
-  Masquito::DNS.new('127.0.0.1', Masquito::DNS::PORT)
-when /install|uninstall/
+  Masquito::DNS.new
+when /daemon|resolver/
   require 'masquito/install'
-  Masquito.send(command)
+  options = %w(install uninstall)
+  unless options.include?(subcommand)
+    abort "Usage: #{filename} #{command} #{options.join(' | ')}"
+  end
+  Masquito.send("#{command}_#{subcommand}")
 when 'version'
   require 'masquito/version'
   puts Masquito::VERSION
 else
-  puts "Usage: masquito #{%w{ install uninstall version }.join(' | ')}"
+  puts "Usage: #{filename} #{%w(daemon resolver version).join(' | ')}"
 end

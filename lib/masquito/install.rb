@@ -1,45 +1,90 @@
+require 'erb'
 require 'fileutils'
-require 'masquito/install/launchctl'
+require 'lunchy'
+require 'tempfile'
 
 module Masquito
+  GEM_PATH = File.expand_path('../../../', __FILE__)
+  TEMPLATE_PLIST_PATH = File.join(GEM_PATH, 'config', 'com.evrone.masquito.plist.erb')
+  PLIST_NAME = File.basename(TEMPLATE_PLIST_PATH, '.erb')
+  SERVICE_NAME = File.basename(PLIST_NAME, '.plist')
+
+  RESOLVER_TEMPLATE_PATH = File.join(GEM_PATH, 'config', 'masquito.erb')
+  RESOLVER_PATH = '/etc/resolver/masquito'
+
   class << self
-    def install
-      mkdir_user_config
-      install_launchctl
-      print_instructions
+    def daemon_install
+      abort_if_superuser
+      FileUtils.mkdir_p(CONFIG_PATH)
+
+      plist = ERB.new(File.read(TEMPLATE_PLIST_PATH))
+      masquito_bin = File.join(GEM_PATH, 'bin', 'masquito')
+      template = plist.result(binding)
+
+      filename = File.join(Dir.tmpdir, PLIST_NAME)
+      File.open(filename, 'w') { |f| f.write(template) }
+      lunchy.install([filename])
+      lunchy.start([SERVICE_NAME])
+      File.unlink(filename)
+
+      puts 'Daemon was successfully installed.'
+      puts 'Run: sudo masquito resolver install'
     end
 
-    def print_instructions
-      puts <<-eos
-Masquito daemon was successfully installed. Please, exec this command:
-
-sudo sh -c 'echo "# Masquito\\nnameserver 127.0.0.1\\nport #{Masquito::DNS::PORT}" > /etc/resolver/dev'
-
-to setup *.dev host.
-      eos
+    def daemon_uninstall
+      abort_if_superuser
+      lunchy.stop([SERVICE_NAME])
+      lunchy.uninstall([PLIST_NAME])
+      puts "You can remove #{CONFIG_PATH} if you don't need these settings"
     end
 
-    def uninstall
-      rmdir_user_config
-      uninstall_launchctl
+    def resolver_install
+      abort_unless_superuser
+      resolver = ERB.new(File.read(RESOLVER_TEMPLATE_PATH))
+      template = resolver.result(binding)
+      File.open(RESOLVER_PATH, 'w') { |f| f.write(template) }
+    end
+
+    def resolver_uninstall
+      abort_unless_superuser
+      FileUtils.rm_rf(RESOLVER_PATH)
     end
 
     private
 
-    def install_launchctl
-      Launchctl.install
+    def lunchy
+      @lunchy ||= Lunchy.new
     end
 
-    def uninstall_launchctl
-      Launchctl.uninstall
+    def abort_unless_superuser
+      unless superuser?
+        abort 'We need superuser privileges, run this command with sudo'
+      end
     end
 
-    def mkdir_user_config
-      FileUtils.mkdir(USER_CONFIG_DIR) unless File.exist?(USER_CONFIG_DIR)
+    def abort_if_superuser
+      if superuser?
+        abort 'No need superuser privileges, run this command without sudo'
+      end
     end
 
-    def rmdir_user_config
-      FileUtils.rm_rf(USER_CONFIG_DIR) if File.directory?(USER_CONFIG_DIR)
+    def superuser?
+      [Process.uid, Process.euid] == [0, 0]
+    end
+  end
+end
+
+class Lunchy
+  CONFIG = { :verbose => false, :write => false }
+
+  def uninstall(params)
+    raise ArgumentError, "uninstall [file]" if params.empty?
+    filename = params[0]
+    %w(~/Library/LaunchAgents /Library/LaunchAgents).each do |dir|
+      if File.exist?(File.expand_path(dir))
+        FileUtils.rm_rf(File.join(File.expand_path(dir), File.basename(filename)))
+        return puts "#{filename} uninstalled from #{dir}"
+      end
     end
   end
 end

@@ -3,13 +3,13 @@
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string><%= SERVICE_NAME_TEMPLATE %></string>
+  <string>com.evrone.masquito</string>
   <key>ProgramArguments</key>
   <array>
     <string>sh</string>
     <string>-i</string>
     <string>-c</string>
-    <string>$SHELL --login -c "<%= ruby_path %> <%= Masquito.bin_path %> start"</string>
+    <string>$SHELL --login -c "<%= masquito_bin %> start"</string>
   </array>
   <key>KeepAlive</key>
   <true/>

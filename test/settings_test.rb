@@ -24,16 +24,16 @@ class TestMasquitoSettings < Test::Unit::TestCase
     FileUtils.rm_rf(TEMP_DIR)
   end
 
-  def test_symlinks
-    result = ['link', 'symlink.dev', 'symlink.domain'].map do |name|
+  def test_files
+    result = ['file', 'link', 'symlink.dev', 'symlink.domain'].map do |name|
       File.join(TEMP_DIR, name)
     end
 
-    assert_equal result, settings.symlinks
+    assert_equal result, settings.files
   end
 
   def test_domains
-    result = ['link.dev.', 'symlink.dev.', 'symlink.domain.'].map do |name|
+    result = ['file.dev.', 'link.dev.', 'symlink.dev.', 'symlink.domain.'].map do |name|
       Resolv::DNS::Name.create(name)
     end
 

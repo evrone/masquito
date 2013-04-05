@@ -7,14 +7,15 @@ module Masquito
       @pattern = File.join(config_path, '*')
     end
 
-    def symlinks
+    def files
       Dir.glob(@pattern).select do |file|
-        File.lstat(file).symlink? && Pathname.new(file).exist?
+        is_symlink = File.lstat(file).symlink?
+        !is_symlink || (is_symlink && Pathname.new(file).exist?)
       end
     end
 
     def domains
-      symlinks.map do |symlink|
+      files.map do |symlink|
         name = File.basename(symlink)
         Resolv::DNS::Name.create(has_domain?(name) ? "#{name}." : "#{name}.dev.")
       end
