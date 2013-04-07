@@ -4,8 +4,14 @@ This gem is for DNS masquerading for rubists. Everyone knows `Pow`, but what
 I really don't like that it uses `node.js` to run ruby applications. Sometimes
 we have to run our apps on the certain domain. Masquito allows you to do it,
 you can create dns records in the similar Pow's way by creating symbolic links
-in `.masquito` directory to your apps or just files because masquito doesn't
-run rack applications just does dns masquerading.
+to your apps or just files in `.masquito` directory.
+
+## Notice:
+
+Masquito doesn't run rack applications. It just masquerads dns records to your
+local IP. Check our another gem
+[https://github.com/route/pump](https://github.com/route/pump) out for full
+replacement of Pow.
 
 ## Installation
 
