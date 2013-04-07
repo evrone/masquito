@@ -13,14 +13,12 @@ case command
 when 'start'
   Masquito::DNS.new
 when /daemon|resolver/
-  require 'masquito/install'
   options = %w(install uninstall)
   unless options.include?(subcommand)
     abort "Usage: #{filename} #{command} #{options.join(' | ')}"
   end
-  Masquito.send("#{command}_#{subcommand}")
+  Masquito::Install.send("#{command}_#{subcommand}")
 when 'version'
-  require 'masquito/version'
   puts Masquito::VERSION
 else
   puts "Usage: #{filename} #{%w(daemon resolver version).join(' | ')}"
