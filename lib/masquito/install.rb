@@ -77,7 +77,7 @@ module Masquito
 end
 
 class Lunchy
-  CONFIG = { :verbose => false, :write => false }
+  CONFIG = { :verbose => false, :write => nil }
 
   def uninstall(params)
     raise ArgumentError, "uninstall [file]" if params.empty?
