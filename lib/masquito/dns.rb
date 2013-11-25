@@ -12,9 +12,9 @@ module Masquito
     }
     @@ttl = 10800 # 3 hours
 
-    def initialize(addr = ADDRESS, port = PORT, config_path = CONFIG_PATH)
+    def initialize(addr = ADDRESS, port = PORT, settings = Settings.new)
       puts "Starting Masquito on #{addr}:#{port}"
-      @settings = Settings.new(config_path)
+      @settings = settings
 
       # Bind port to receive requests
       socket = UDPSocket.new

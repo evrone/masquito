@@ -2,6 +2,7 @@ require 'erb'
 require 'fileutils'
 require 'lunchy'
 require 'tempfile'
+require 'pathname'
 
 module Masquito
   GEM_PATH = File.expand_path('../../../', __FILE__)
@@ -10,7 +11,7 @@ module Masquito
   SERVICE_NAME = File.basename(PLIST_NAME, '.plist')
 
   RESOLVER_TEMPLATE_PATH = File.join(GEM_PATH, 'config', 'masquito.erb')
-  RESOLVER_PATH = '/etc/resolver/masquito'
+  RESOLVERS_PATH = Pathname.new('/etc/resolver')
 
   module Install
     class << self
@@ -43,12 +44,16 @@ module Masquito
         abort_unless_superuser
         resolver = ERB.new(File.read(RESOLVER_TEMPLATE_PATH))
         template = resolver.result(binding)
-        File.open(RESOLVER_PATH, 'w') { |f| f.write(template) }
+        Masquito::Settings.new.domains.each do |domain|
+          File.open(RESOLVERS_PATH.join(domain.to_s), 'w') { |f| f.write(template) }
+        end
       end
 
       def resolver_uninstall
         abort_unless_superuser
-        FileUtils.rm_rf(RESOLVER_PATH)
+        Masquito::Settings.new.domains.each do |domain|
+          FileUtils.rm_rf(RESOLVERS_PATH.join(domain.to_s))
+        end
       end
 
       private

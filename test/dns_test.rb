@@ -17,7 +17,7 @@ class TestMasquitoDNS < Test::Unit::TestCase
     end
 
     @thread = Thread.new do
-      Masquito::DNS.new('127.0.0.1', '51234', TEMP_DIR)
+      Masquito::DNS.new('127.0.0.1', '51234', Masquito::Settings.new(TEMP_DIR))
     end
   end
 
