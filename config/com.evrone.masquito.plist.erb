@@ -6,11 +6,15 @@
   <string>com.evrone.masquito</string>
   <key>ProgramArguments</key>
   <array>
-    <string>sh</string>
-    <string>-i</string>
-    <string>-c</string>
-    <string>$SHELL --login -c "<%= masquito_bin %> start"</string>
+    <string><%= RbConfig.ruby %></string>
+    <string><%= ::Masquito::BIN %></string>
+    <string>start</string>
   </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>CONFIG_PATH</key>
+    <string><%= ::Masquito::CONFIG_PATH %></string>
+  </dict>
   <key>KeepAlive</key>
   <true/>
   <key>RunAtLoad</key>

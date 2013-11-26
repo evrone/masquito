@@ -2,7 +2,7 @@ require 'socket'
 require 'resolv'
 
 module Masquito
-  class DNS
+  class Daemon
     ADDRESS = '127.0.0.1'
     PORT = 53532
 
@@ -12,26 +12,48 @@ module Masquito
     }
     @@ttl = 10800 # 3 hours
 
-    def initialize(addr = ADDRESS, port = PORT, settings = Settings.new)
-      puts "Starting Masquito on #{addr}:#{port}"
-      @settings = settings
+    def initialize(config_path = CONFIG_PATH, addr = ADDRESS, port = PORT)
+      @addr, @port = addr, port
+      @settings = Settings.new(config_path)
+      @resolver = Resolver.new(config_path)
+      at_exit { stop }
+    end
+
+    def start
+      start_resolver
+      start_dns_server
+    end
+
+    def start_resolver
+      @resolver_thread = Thread.new { @resolver.start }
+    end
+
+    def start_dns_server
+      puts "Starting Masquito on #{@addr}:#{@port}"
 
       # Bind port to receive requests
-      socket = UDPSocket.new
-      socket.bind(addr, port)
+      @socket = UDPSocket.new
+      @socket.bind(@addr, @port)
 
       loop do
         # Receive and parse query
-        data, sender_addrinfo = socket.recvfrom(512)
+        data, sender_addrinfo = @socket.recvfrom(512)
 
         Thread.new(data, sender_addrinfo) do |data, sender_addrinfo|
           sender_port, sender_ip = sender_addrinfo[1], sender_addrinfo[2]
           query = Resolv::DNS::Message.decode(data)
           answer = setup_answer(query)
-          socket.send(answer.encode, 0, sender_ip, sender_port) # Send the response
+          @socket.send(answer.encode, 0, sender_ip, sender_port) # Send the response
         end
       end
     end
+
+    def stop
+      @resolver_thread && (@resolver_thread.join(0.5) || @resolver_thread.kill)
+      @resolver.remove_configs
+    end
+
+    private
 
     # Setup answer
     def setup_answer(query)

@@ -3,7 +3,7 @@ require 'pathname'
 
 module Masquito
   class Settings
-    def initialize(config_path = CONFIG_PATH)
+    def initialize(config_path)
       @pattern = File.join(config_path, '*')
     end
 

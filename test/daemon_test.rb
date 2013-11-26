@@ -4,20 +4,20 @@ require 'test_helper'
 
 require 'masquito'
 
-class TestMasquitoDNS < Test::Unit::TestCase
+class TestMasquitoDaemon < Test::Unit::TestCase
   TEMP_DIR = File.join(Dir.pwd, 'test/tmp')
 
   def setup
     FileUtils.mkdir_p(TEMP_DIR)
 
     file = File.new(File.join(TEMP_DIR, 'file'), 'w')
-    ['link', 'symlink.dev', 'symlink.domain'].each do |name|
+    ['symlink.dev', 'symlink.domain'].each do |name|
       symlink = File.join(TEMP_DIR, name)
       FileUtils.ln_s(file.path, symlink)
     end
 
     @thread = Thread.new do
-      Masquito::DNS.new('127.0.0.1', '51234', Masquito::Settings.new(TEMP_DIR))
+      Masquito::Daemon.new(TEMP_DIR, '127.0.0.1', '51234').start_dns_server
     end
   end
 
@@ -34,8 +34,6 @@ class TestMasquitoDNS < Test::Unit::TestCase
 
     response = Resolv::IPv4.create('127.0.0.1')
     Resolv::DNS.open(:nameserver => ['127.0.0.1']) do |dns|
-      assert_equal response, dns.getaddress('link.dev.')
-      assert_equal response, dns.getaddress('sym.sym.link.dev.')
       assert_equal response, dns.getaddress('symlink.dev.')
       assert_equal response, dns.getaddress('www.symlink.dev.')
       assert_equal response, dns.getaddress('symlink.domain.')
